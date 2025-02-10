@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import User from "../models/User";
+import User from "../models/user";
 import {
   hashPassword,
   comparePasswords,
   generateToken,
 } from "../utils/passwordUtils";
 import { IUserDocument } from "../types/user.types";
+ import { omit } from "lodash";
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -27,11 +28,10 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     });
 
     await user.save();
-    const token = generateToken(user._id);
+    const token = generateToken(user._id as string);
 
     // Remove password from response
-    const userResponse = user.toObject();
-    delete userResponse.password;
+  const userResponse = omit(user.toObject(), ["password"]);
 
     res.status(201).json({ user: userResponse, token });
   } catch (error) {
@@ -44,7 +44,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
     // Find user
-    const user = await User.findOne({ email }).select("+password");
+    const user: IUserDocument | null = await User.findOne({ email }).select(
+      "+password"
+    );
     if (!user) {
       res.status(401).json({ error: "Invalid credentials" });
       return;
