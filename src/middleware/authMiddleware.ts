@@ -7,22 +7,20 @@ export interface AuthRequest extends Request {
   userId?: string;
 }
 
-export const auth = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const token = req.header("Authorization")?.replace("Bearer ", "");
+  if (!token)
+    return res
+      .status(401)
+      .json({ message: "Access denied. No token provided." });
+
   try {
-    const token = req.header("Authorization")?.replace("Bearer ", "");
-
-    if (!token) {
-      throw new Error();
-    }
-
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-    req.userId = decoded.userId;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    req.userId = (decoded as any).userId;
     next();
-  } catch (error) {
-    res.status(401).json({ error: "Please authenticate" });
+  } catch (ex) {
+    res.status(400).json({ message: "Invalid token." });
   }
 };
+
+export default authMiddleware;
