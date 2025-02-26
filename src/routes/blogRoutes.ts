@@ -3,17 +3,19 @@ import {
   createBlog,
   getAllBlogs,
   getBlogById,
-  likeBlog,
+  // likeBlog,
   commentOnBlog,
 } from "../contollers/BlogController";
-import authMiddleware from "../middleware/authMiddleware";
+
+import auth from "../middleware/authMiddleware";
 
 const router = express.Router();
 
 router.post("/", createBlog);
 router.get("/", getAllBlogs);
-router.get("/:id", getBlogById);
-router.post("/:id/like", authMiddleware, likeBlog);
-router.post("/:id/comment", commentOnBlog);
+router.get("/:id",auth, getBlogById);
+// router.post("/:id/like", auth, likeBlog);
+router.post("/:id/comment", auth, commentOnBlog);
+
 
 export default router;
