@@ -1,18 +1,12 @@
 import express from "express";
-import cors from "cors"; 
-import { json } from "body-parser";
+import cors from "cors";
+import { json, urlencoded } from "body-parser";
 import authRoutes from "./routes/authRoutes";
 import blogRoutes from "./routes/blogRoutes";
 
 const app = express();
 
-
-const allowedOrigins = [
-  "https://arevei-lovat.vercel.app",
-  "http://localhost:5173",
-  "https://arevei-backend.vercel.app",
-];
-
+const allowedOrigins = ["https://arevei-lovat.vercel.app"];
 
 app.use(
   cors({
@@ -29,10 +23,11 @@ app.use(
   })
 );
 
-
-
+app.options("*", cors());
 
 app.use(json());
+app.use(urlencoded({ extended: true }));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 
