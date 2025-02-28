@@ -6,7 +6,7 @@ import blogRoutes from "./routes/blogRoutes";
 
 const app = express();
 
-const allowedOrigins = ["https://arevei-lovat.vercel.app"];
+const allowedOrigins = ["https://arevei-three.vercel.app/"];
 
 app.use(
   cors({
