@@ -12,15 +12,21 @@ const app = (0, express_1.default)();
 const allowedOrigins = [
     "https://arevei-lovat.vercel.app",
     "http://localhost:5173",
-    "https://arevei-lovat.vercel.app",
+    "https://arevei-backend.vercel.app",
 ];
 app.use((0, cors_1.default)({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
-app.use(express_1.default.json());
 app.use((0, body_parser_1.json)());
 app.use("/api/auth", authRoutes_1.default);
 app.use("/api/blogs", blogRoutes_1.default);
